@@ -1,0 +1,22 @@
+diff --git a/webcm.cpp b/webcm.cpp
+index 489a241..5202eea 100644
+--- a/webcm.cpp
++++ b/webcm.cpp
+@@ -24,7 +24,7 @@
+ #include "third-party/miniz.c"
+ 
+ #define RAM_SIZE (UINT64_C(256)*1024*1024)
+-#define ROOTFS_SIZE (UINT64_C(384)*1024*1024)
++#define ROOTFS_SIZE (UINT64_C(512)*1024*1024)  // >= rootfs.ext2 file size
+ #define RAM_START UINT64_C(0x80000000)
+ #define ROOTFS_START UINT64_C(0x80000000000000)
+ 
+@@ -264,7 +264,7 @@ int main() {
+         "dtb": {
+             "bootargs": "quiet earlycon=sbi console=hvc1 root=/dev/pmem0 rw init=/usr/sbin/cartesi-init",
+             "init": "date -s @%llu >> /dev/null && https-proxy 127.254.254.254 80 443 > /dev/null 2>&1 &",
+-            "entrypoint": "exec ash -l"
++            "entrypoint": "stty onlcr 2>/dev/null; exec ash -l"
+         },
+         "ram": {"length": %llu},
+         "flash_drive": [

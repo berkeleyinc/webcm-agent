@@ -1,0 +1,5 @@
+#!/bin/sh
+# Runs before webcm-init prints the MOTD (the init.d loop is alphabetical).
+# The guest console needs ONLCR so `\n` also returns the cursor to column 0;
+# without it every line continues where the previous one ended.
+stty onlcr 2>/dev/null

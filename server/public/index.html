@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>webcm-agent — a private server-side Linux VM, with an agent</title>
+    <meta
+      name="description"
+      content="Every visitor gets their own RISC-V Linux VM running server-side, plus an LLM agent that works in it."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/vendor/xterm.min.css" />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo" aria-hidden="true">▚</span>
+        <div>
+          <h1>webcm-agent</h1>
+          <p class="tagline">your own RISC-V Linux VM, running server-side</p>
+        </div>
+      </div>
+
+      <div class="status">
+        <span class="pill" id="pill-state" data-state="connecting"><i class="dot"></i><span id="pill-text">connecting…</span></span>
+        <span class="pill subtle" id="pill-uptime" hidden></span>
+      </div>
+
+      <div class="actions">
+        <button id="btn-agent" class="btn" aria-pressed="false" title="show the agent panel (⌘K)">Agent</button>
+        <button id="btn-restart" class="btn" title="reboot this VM (keeps the session)">Reboot</button>
+        <button id="btn-reset" class="btn" title="throw this machine away and start a fresh one">New machine</button>
+        <button id="btn-more" class="btn icon" aria-label="more">⋯</button>
+        <div class="menu" id="menu" hidden>
+          <button data-act="copy">Copy screen</button>
+          <button data-act="reset">New machine</button>
+          <button data-act="restart">Reboot VM</button>
+          <button data-act="help">Keyboard shortcuts</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="terminal-wrap">
+        <div class="term-head">
+          <span class="term-title" id="term-title">root@webcm-agent — ash</span>
+          <span class="term-meta" id="term-meta"></span>
+        </div>
+        <div id="terminal"></div>
+        <div class="hint" id="hint">click and type — this is a real shell on a real VM</div>
+      </section>
+
+      <aside class="panel" id="panel" hidden>
+        <div class="panel-tabs" role="tablist">
+          <button class="tab active" data-tab="agent" role="tab">Agent</button>
+          <button class="tab" data-tab="machine" role="tab">Machine</button>
+          <button class="tab" data-tab="activity" role="tab">Activity</button>
+          <button class="panel-close btn icon" id="btn-close-panel" aria-label="close panel">×</button>
+        </div>
+
+        <!-- ------------------------------------------------------------ agent -->
+        <div class="tab-body" data-pane="agent">
+          <div class="compose">
+            <textarea id="goal" rows="3" placeholder="Tell the agent what to do — e.g. “install ripgrep, count the TODOs in /root/workspace, save a report”"></textarea>
+            <div class="compose-row">
+              <button id="btn-run" class="btn primary grow">▶ Run agent</button>
+              <button id="btn-stop" class="btn danger" disabled>Stop</button>
+            </div>
+            <div class="chips" id="demos"></div>
+          </div>
+
+          <div class="run-head" id="run-head" hidden>
+            <span class="run-goal" id="run-goal"></span>
+            <span class="run-steps" id="run-steps"></span>
+          </div>
+
+          <ol class="feed" id="timeline" reversed></ol>
+          <p class="empty" id="timeline-empty">no runs yet — give the agent a goal above</p>
+        </div>
+
+        <!-- ---------------------------------------------------------- machine -->
+        <div class="tab-body" data-pane="machine" hidden>
+          <dl class="kv" id="info-list"></dl>
+          <h3>Things to try</h3>
+          <div class="sql" id="try-list"></div>
+          <h3>Recipes</h3>
+          <div class="sql" id="recipe-list"></div>
+          <button class="btn small" id="btn-replay-all">Re-run saved commands</button>
+        </div>
+
+        <!-- --------------------------------------------------------- activity -->
+        <div class="tab-body" data-pane="activity" hidden>
+          <h3>Commands <span class="counter" id="hist-count"></span></h3>
+          <ol class="feed compact" id="history-list" reversed></ol>
+          <div class="act-toggles">
+            <label class="check"><input type="checkbox" id="show-net" checked /> network</label>
+            <button class="btn small" id="btn-clear-activity">clear</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <div class="toast-wrap" id="toasts"></div>
+    <dialog id="help">
+      <h2>Shortcuts</h2>
+      <dl class="keys">
+        <dt>⌘K / Ctrl-K</dt><dd>focus the goal box</dd>
+        <dt>⌘⏎ / Ctrl-⏎</dt><dd>run the agent</dd>
+        <dt>⌘J / Ctrl-J</dt><dd>toggle the panel</dd>
+        <dt>Esc</dt><dd>back to the terminal</dd>
+      </dl>
+      <form method="dialog"><button class="btn">close</button></form>
+    </dialog>
+
+    <script src="/vendor/xterm.min.js"></script>
+    <script src="/vendor/addon-fit.min.js"></script>
+    <script src="/vendor/addon-web-links.min.js"></script>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

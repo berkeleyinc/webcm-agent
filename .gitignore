@@ -1,0 +1,26 @@
+# build outputs
+artifacts/
+server/agent/webcm.wasm
+server/agent/webcm.mjs
+*.zz
+*.ext2
+*.bin
+emscripten-pty.js
+
+# runtime data
+data/
+*.log
+.cache/
+
+# vendored browser libs are committed (offline-friendly);
+# refresh with scripts/vendor-web.sh
+
+# upstream checkout build residue
+webcm/rootfs.tar
+webcm/rootfs.ext2
+webcm/rootfs.ext2.zz
+webcm/linux.bin
+webcm/linux.bin.zz
+
+# local env
+.env

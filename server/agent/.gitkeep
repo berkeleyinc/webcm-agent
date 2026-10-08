@@ -1,0 +1,4 @@
+# Build outputs land here (git-ignored): webcm.mjs, webcm.wasm.
+#
+# Tracked only so the directory exists in a fresh clone - server/runner.Dockerfile
+# copies it into the image, and COPY fails on a missing path.

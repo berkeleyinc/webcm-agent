@@ -1,0 +1,10 @@
+# Keep the build context small. Build outputs and local env are excluded; the
+# builder container only needs the Dockerfiles, sources and guest-skel.
+**/.git
+**/node_modules
+**/.cache
+*.log
+artifacts/
+data/
+.cache/
+.env

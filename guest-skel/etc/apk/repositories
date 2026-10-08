@@ -1,0 +1,5 @@
+# Direct upstream mirrors: the guest reaches them through the host's HTTP proxy
+# (the emulator turns guest requests into host-side fetches), so no CORS
+# workaround is needed the way it is in the browser build.
+http://dl-cdn.alpinelinux.org/alpine/v3.22/main
+http://dl-cdn.alpinelinux.org/alpine/v3.22/community

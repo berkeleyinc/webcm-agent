@@ -1,0 +1,7 @@
+[user]
+	name = webcm-agent
+	email = agent@webcm.local
+[init]
+	defaultBranch = main
+[safe]
+	directory = *

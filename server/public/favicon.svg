@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="webcm-agent">
+  <title>webcm-agent</title>
+  <!-- A terminal prompt sitting inside a RISC-V chip. -->
+  <rect x="3" y="3" width="58" height="58" rx="13" fill="#0a0c11"/>
+  <rect x="3.75" y="3.75" width="56.5" height="56.5" rx="12.25" fill="none"
+        stroke="#7aa2f7" stroke-opacity=".38" stroke-width="1.5"/>
+
+  <!-- pins -->
+  <g stroke="#7aa2f7" stroke-opacity=".55" stroke-width="2.5" stroke-linecap="round">
+    <path d="M15 3v-3M27 3v-3M39 3v-3M51 3v-3"/>
+    <path d="M15 61v3M27 61v3M39 61v3M51 61v3"/>
+    <path d="M3 15h-3M3 27h-3M3 39h-3M3 51h-3"/>
+    <path d="M61 15h3M61 27h3M61 39h3M61 51h3"/>
+  </g>
+
+  <!-- screen -->
+  <rect x="12" y="13" width="40" height="38" rx="6" fill="#11141b"
+        stroke="#7aa2f7" stroke-opacity=".5" stroke-width="1.5"/>
+
+  <!-- prompt: >_ -->
+  <path d="M20 25l6.5 5.5-6.5 5.5" fill="none" stroke="#7aa2f7"
+        stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M31.5 36.5h10" stroke="#6cc48c" stroke-width="3.4" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,19 @@
+#!/bin/sh
+# Replaces upstream's webcm-init: same setup, shorter, agent-facing MOTD.
+export TERM=xterm-256color
+export USER=root
+clear
+
+blue=$(printf '\033[1;34m')
+dim=$(printf '\033[2m')
+reset=$(printf '\033[0m')
+
+printf '%s  %s  ·  RISC-V RV64GC  ·  Alpine %s  ·  %s linux %s\n\n' \
+    "$(hostname)" "$(uname -m)" "$(cat /etc/alpine-release)" \
+    "$(free -m | awk '/Mem:/ { printf "%d/%dMiB mem", $3, $2 }')" "$(uname -r)"
+
+printf 'a private machine, booted for this session. working dir: /root/workspace\n'
+printf 'network works (curl, git, apk); compilers: gcc, node, python3, make\n\n'
+
+printf '%stools%s  htop  nvim  rg  jq  tree  tmux  sqlite3  cmatrix\n' "$blue" "$reset"
+printf '%stry%s    rg -n TODO /root/workspace ; gcc -o /tmp/a a.c ; node -e 1+1 ; curl -s ifconfig.me\n\n' "$blue" "$reset"

@@ -1,0 +1,76 @@
+# webcm-agent — one private server-side RISC-V Linux VM per visitor.
+#
+#   make up          build the VM artifacts, then start the server (recommended)
+#   docker compose up -d --build server     start/rebuild just the app
+#   docker compose run --rm builder inner-wasm    rebuild webcm.mjs/webcm.wasm
+#   docker compose run --rm builder inner-rootfs  rebuild the guest filesystem
+#
+# The `builder` container owns every build step that needs the pinned
+# toolchain; it mounts the repo at /mnt and runs Makefile targets. `server` is
+# the Node app that hosts the VMs and is the only long-running service.
+#
+# Note on ordering: the server image bakes in ./server/agent/* (the wasm), which
+# the builder produces at runtime, so run `make up` (which builds artifacts
+# first) rather than a bare `docker compose up --build` on a fresh clone.
+
+services:
+  # ---------------------------------------------------------------- toolchain
+  builder:
+    profiles: ["tools"]
+    build:
+      context: .
+      dockerfile: docker/builder.Dockerfile
+    image: webcm-agent/builder:local
+    working_dir: /mnt
+    user: "0:0"
+    volumes:
+      - .:/mnt
+      - build-cache:/cache
+    environment:
+      EM_CACHE: /cache/emscripten
+      PIGZ_LEVEL: "6"
+    # `docker compose run --rm builder <target>` runs `make <target>`.
+    entrypoint: ["make"]
+    command: ["--version"]
+
+  # ---------------------------------------------------------------- app server
+  server:
+    build:
+      context: .
+      dockerfile: server/runner.Dockerfile
+    image: webcm-agent/server:local
+    ports:
+      - "${WEB_PORT:-8095}:8080"
+    environment:
+      PORT: "8080"
+      HOST: 0.0.0.0
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      AGENT_ENABLED: "${AGENT_ENABLED:-true}"
+      # LLM brain for the agent loop (OpenAI-compatible /chat/completions).
+      # Set in .env (git-ignored) - see .env.example.
+      LLM_BASE_URL: "${LLM_BASE_URL:?set LLM_BASE_URL in .env (see .env.example)}"
+      LLM_API_KEY: "${LLM_API_KEY:?set LLM_API_KEY in .env (see .env.example)}"
+      LLM_MODEL: "${LLM_MODEL:-deepseek-ai/DeepSeek-V4.1-Dealigned}"
+      LLM_CONTEXT_WINDOW: "${LLM_CONTEXT_WINDOW:-1048576}"
+      LLM_MAX_TOKENS: "${LLM_MAX_TOKENS:-4096}"
+      # Per-session limits; see server/src/config.js for the full list.
+      SESSION_MAX_RUNNING: "${SESSION_MAX_RUNNING:-8}"
+      SESSION_MAX_WALL_MS: "${SESSION_MAX_WALL_MS:-1800000}"
+      SESSION_IDLE_MS: "${SESSION_IDLE_MS:-900000}"
+      SESSION_DETACH_MS: "${SESSION_DETACH_MS:-60000}"
+      SESSION_MEMORY_MIB: "${SESSION_MEMORY_MIB:-1536}"
+    volumes:
+      # Sessions (transcripts, command recipes) survive a restart.
+      - session-data:/app/data
+    stop_grace_period: 30s
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  build-cache:
+  session-data:
